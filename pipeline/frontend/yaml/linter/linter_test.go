@@ -15,6 +15,11 @@ pipeline:
     network_mode: host
     volumes:
       - /tmp:/tmp
+    matrix:
+      TARGET:
+        - linux/amd64
+        - linux/arm
+        - windows/amd64
     commands:
       - go build
       - go test
