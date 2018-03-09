@@ -32,6 +32,14 @@ entrypoint: /code/entrypoint.sh
 environment:
   - RACK_ENV=development
   - SHOW=true
+matrix:
+  TARGET:
+    - x86
+    - amd64
+    - arm
+  ARCH:
+    - windows
+    - linux
 extra_hosts:
  - somehost:162.242.195.82
  - otherhost:50.31.209.229
@@ -83,6 +91,10 @@ func TestUnmarshalContainer(t *testing.T) {
 		DNSSearch:     libcompose.Stringorslice{"example.com"},
 		Entrypoint:    libcompose.Command{"/code/entrypoint.sh"},
 		Environment:   libcompose.SliceorMap{"RACK_ENV": "development", "SHOW": "true"},
+		Matrix: map[string][]string{
+			"TARGET": []string{"x86","amd64","arm"},
+			"ARCH": []string{"windows","linux"},
+		},
 		ExtraHosts:    []string{"somehost:162.242.195.82", "otherhost:50.31.209.229"},
 		Image:         "golang:latest",
 		Isolation:     "hyperv",
