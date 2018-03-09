@@ -53,6 +53,10 @@ func ParseString(data string) ([]Axis, error) {
 	return Parse([]byte(data))
 }
 
+func (m Matrix) Axes() []Axis {
+	return calc(m)
+}
+
 func calc(matrix Matrix) []Axis {
 	// calculate number of permutations and extract the list of tags
 	// (ie go_version, redis_version, etc)
