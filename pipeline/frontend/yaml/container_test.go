@@ -32,7 +32,7 @@ entrypoint: /code/entrypoint.sh
 environment:
   - RACK_ENV=development
   - SHOW=true
-matrix:
+envmatrix:
   TARGET:
     - x86
     - amd64
@@ -78,22 +78,22 @@ func TestUnmarshalContainer(t *testing.T) {
 			Username: "janedoe",
 			Password: "password",
 		},
-		CapAdd:        []string{"ALL"},
-		CapDrop:       []string{"NET_ADMIN", "SYS_ADMIN"},
-		Command:       libcompose.Command{"bundle", "exec", "thin", "-p", "3000"},
-		Commands:      libcompose.Stringorslice{"go build", "go test"},
-		CPUQuota:      libcompose.StringorInt(11),
-		CPUSet:        "1,2",
-		CPUShares:     libcompose.StringorInt(99),
-		Detached:      true,
-		Devices:       []string{"/dev/ttyUSB0:/dev/ttyUSB0"},
-		DNS:           libcompose.Stringorslice{"8.8.8.8"},
-		DNSSearch:     libcompose.Stringorslice{"example.com"},
-		Entrypoint:    libcompose.Command{"/code/entrypoint.sh"},
-		Environment:   libcompose.SliceorMap{"RACK_ENV": "development", "SHOW": "true"},
-		Matrix: map[string][]string{
-			"TARGET": []string{"x86","amd64","arm"},
-			"ARCH": []string{"windows","linux"},
+		CapAdd:      []string{"ALL"},
+		CapDrop:     []string{"NET_ADMIN", "SYS_ADMIN"},
+		Command:     libcompose.Command{"bundle", "exec", "thin", "-p", "3000"},
+		Commands:    libcompose.Stringorslice{"go build", "go test"},
+		CPUQuota:    libcompose.StringorInt(11),
+		CPUSet:      "1,2",
+		CPUShares:   libcompose.StringorInt(99),
+		Detached:    true,
+		Devices:     []string{"/dev/ttyUSB0:/dev/ttyUSB0"},
+		DNS:         libcompose.Stringorslice{"8.8.8.8"},
+		DNSSearch:   libcompose.Stringorslice{"example.com"},
+		Entrypoint:  libcompose.Command{"/code/entrypoint.sh"},
+		Environment: libcompose.SliceorMap{"RACK_ENV": "development", "SHOW": "true"},
+		EnvMatrix: map[string][]string{
+			"TARGET": []string{"x86", "amd64", "arm"},
+			"ARCH":   []string{"windows", "linux"},
 		},
 		ExtraHosts:    []string{"somehost:162.242.195.82", "otherhost:50.31.209.229"},
 		Image:         "golang:latest",

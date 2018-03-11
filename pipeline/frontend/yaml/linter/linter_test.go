@@ -15,7 +15,7 @@ pipeline:
     network_mode: host
     volumes:
       - /tmp:/tmp
-    matrix:
+    envmatrix:
       TARGET:
         - linux/amd64
         - linux/arm

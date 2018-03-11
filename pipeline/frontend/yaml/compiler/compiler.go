@@ -165,7 +165,7 @@ func (c *Compiler) Compile(conf *yaml.Config) *backend.Config {
 			continue
 		}
 
-		if stage == nil || group != container.Group || container.Group == "" {
+		if stage == nil || group != container.Group || len(container.Group) == 0 {
 			group = container.Group
 
 			stage = new(backend.Stage)
@@ -174,7 +174,7 @@ func (c *Compiler) Compile(conf *yaml.Config) *backend.Config {
 			config.Stages = append(config.Stages, stage)
 		}
 
-		axes := container.Matrix.Axes()
+		axes := container.EnvMatrix.Axes()
 		if len(axes) >= 0 {
 			for j, axis := range axes {
 				newcontainer := container
@@ -183,9 +183,10 @@ func (c *Compiler) Compile(conf *yaml.Config) *backend.Config {
 				}
 				name := fmt.Sprintf("%s_step_%d_%d", c.prefix, i, j)
 				step := c.createProcess(name, newcontainer, "pipeline")
+				step.Alias = fmt.Sprintf("%s %s", container.Name, axis.String())
 				stage.Steps = append(stage.Steps, step)
 				// not grouped pipeline step so create a new stage
-				if container.Group == "" {
+				if len(container.Group) == 0 {
 					stage = new(backend.Stage)
 					stage.Name = fmt.Sprintf("%s_stage_%v_%d", c.prefix, i, j)
 					stage.Alias = container.Name
