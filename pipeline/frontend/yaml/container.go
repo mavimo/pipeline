@@ -3,6 +3,7 @@ package yaml
 import (
 	"fmt"
 
+	"github.com/cncd/pipeline/pipeline/frontend/yaml/matrix"
 	libcompose "github.com/docker/libcompose/yaml"
 	"gopkg.in/yaml.v2"
 )
@@ -37,6 +38,7 @@ type (
 		DNSSearch     libcompose.Stringorslice  `yaml:"dns_search,omitempty"`
 		Entrypoint    libcompose.Command        `yaml:"entrypoint,omitempty"`
 		Environment   libcompose.SliceorMap     `yaml:"environment,omitempty"`
+		EnvMatrix     matrix.Matrix             `yaml:"envmatrix,omitempty"`
 		ExtraHosts    []string                  `yaml:"extra_hosts,omitempty"`
 		Group         string                    `yaml:"group,omitempty"`
 		Image         string                    `yaml:"image,omitempty"`

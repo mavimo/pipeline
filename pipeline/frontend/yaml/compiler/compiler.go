@@ -149,7 +149,10 @@ func (c *Compiler) Compile(conf *yaml.Config) *backend.Config {
 		config.Stages = append(config.Stages, stage)
 	}
 
-	// add pipeline steps. 1 pipeline step per stage, at the moment
+	// add pipeline steps.
+	// if group is empty, one pipeline step per stage
+	// if group stays the same, group pipeline steps in one stage
+	// create multiple pipeline steps in function of matrix
 	var stage *backend.Stage
 	var group string
 	for i, container := range conf.Pipeline.Containers {
@@ -162,7 +165,7 @@ func (c *Compiler) Compile(conf *yaml.Config) *backend.Config {
 			continue
 		}
 
-		if stage == nil || group != container.Group || container.Group == "" {
+		if stage == nil || group != container.Group || len(container.Group) == 0 {
 			group = container.Group
 
 			stage = new(backend.Stage)
@@ -171,9 +174,30 @@ func (c *Compiler) Compile(conf *yaml.Config) *backend.Config {
 			config.Stages = append(config.Stages, stage)
 		}
 
-		name := fmt.Sprintf("%s_step_%d", c.prefix, i)
-		step := c.createProcess(name, container, "pipeline")
-		stage.Steps = append(stage.Steps, step)
+		axes := container.EnvMatrix.Axes()
+		if len(axes) >= 0 {
+			for j, axis := range axes {
+				newcontainer := container
+				for variable, value := range axis {
+					newcontainer.Environment[variable] = value
+				}
+				name := fmt.Sprintf("%s_step_%d_%d", c.prefix, i, j)
+				step := c.createProcess(name, newcontainer, "pipeline")
+				step.Alias = fmt.Sprintf("%s %s", container.Name, axis.String())
+				stage.Steps = append(stage.Steps, step)
+				// not grouped pipeline step so create a new stage
+				if len(container.Group) == 0 {
+					stage = new(backend.Stage)
+					stage.Name = fmt.Sprintf("%s_stage_%v_%d", c.prefix, i, j)
+					stage.Alias = container.Name
+					config.Stages = append(config.Stages, stage)
+				}
+			}
+		} else {
+			name := fmt.Sprintf("%s_step_%d", c.prefix, i)
+			step := c.createProcess(name, container, "pipeline")
+			stage.Steps = append(stage.Steps, step)
+		}
 	}
 
 	c.setupCacheRebuild(conf, config)

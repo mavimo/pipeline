@@ -31,6 +31,7 @@ func xTestParse(t *testing.T) {
 				g.Assert(out.Pipeline.Containers[0].Image).Equal("golang")
 				g.Assert(out.Pipeline.Containers[0].Commands).Equal(yaml.Stringorslice{"go install", "go test"})
 				g.Assert(out.Pipeline.Containers[1].Name).Equal("build")
+				g.Assert(out.Pipeline.Containers[1].EnvMatrix["TARGET"]).Equal(yaml.Stringorslice{"linux/amd64", "windows/amd64", "linux/arm"})
 				g.Assert(out.Pipeline.Containers[1].Image).Equal("golang")
 				g.Assert(out.Pipeline.Containers[1].Commands).Equal(yaml.Stringorslice{"go build"})
 				g.Assert(out.Pipeline.Containers[2].Name).Equal("notify")
@@ -72,7 +73,12 @@ pipeline:
       - go test
   build:
     image: golang
-    network_mode: container:name
+		network_mode: container:name
+		envmatrix:
+			TARGET:
+				- linux/amd64
+				- windows/amd64
+				- linux/arm 
     commands:
       - go build
     when:
