@@ -6,6 +6,7 @@ import (
 	"github.com/cncd/pipeline/pipeline/backend"
 	"github.com/cncd/pipeline/pipeline/frontend"
 	"github.com/cncd/pipeline/pipeline/frontend/yaml"
+	libcompose "github.com/docker/libcompose/yaml"
 )
 
 // TODO(bradrydzewski) compiler should handle user-defined volumes from YAML
@@ -178,6 +179,9 @@ func (c *Compiler) Compile(conf *yaml.Config) *backend.Config {
 		if len(axes) >= 0 {
 			for j, axis := range axes {
 				newcontainer := container
+				if newcontainer.Environment == nil {
+					newcontainer.Environment = make(libcompose.SliceorMap)
+				}
 				for variable, value := range axis {
 					newcontainer.Environment[variable] = value
 				}
